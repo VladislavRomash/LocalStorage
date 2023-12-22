@@ -1,33 +1,25 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import './App.css';
 import {Button} from './components/Button';
 
 function App() {
 
-    const [count, setCount] = useState<number>(0)
-    const [removeMethod, setRemoveMethod] = useState<number>(0)
+    const get = localStorage.getItem('set')
 
-    const incrementCountHandler = () => {
+    const [count, setCount] = useState<number>(get ? JSON.parse(get) : 0)
+
+    // Вместо использования useState<number>(0),
+    // я сначала извлекаю значение из localStorage с помощью localStorage.getItem('set'),
+    // а затем проверяю, есть ли у него значение (get),
+    // и если есть, использую его при инициализации состояния count.
+    // Если значения в localStorage нет, то состояние count будет инициализировано со значением 0.
+
+    useEffect(() => {
+        localStorage.setItem('set', JSON.stringify(count))
+    }, [count])
+
+    const incrementHandler = () => {
         setCount(count + 1)
-        setRemoveMethod(removeMethod + 1)
-    }
-    const setLocalStorageHandler = () => {
-        localStorage.setItem('setCount', JSON.stringify(count))
-        localStorage.setItem('setRemove', JSON.stringify(removeMethod))
-    }
-    const getLocalStorageHandler = () => {
-        const getValue = localStorage.getItem('setCount')
-        if (getValue) {
-            const newValue = JSON.parse(getValue)
-            setCount(newValue)
-        }
-    }
-    const clearLocalStorageHandler = () => {
-        localStorage.clear()
-        setCount(0)
-    }
-    const removeItemLocalStorageHandler = () => {
-        localStorage.removeItem('setRemove')
     }
 
     return (
@@ -36,11 +28,7 @@ function App() {
             <div className={'block'}>
                 {count}
                 <div>
-                    <Button name={'increment'} callback={incrementCountHandler}/>
-                    <Button name={'set'} callback={setLocalStorageHandler}/>
-                    <Button name={'get'} callback={getLocalStorageHandler}/>
-                    <Button name={'clear'} callback={clearLocalStorageHandler}/>
-                    <Button name={'removeItem'} callback={removeItemLocalStorageHandler}/>
+                    <Button name={'increment'} callback={incrementHandler}/>
                 </div>
             </div>
         </div>
